@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🕵️ Detetive</title>
+  <style>
+    body { background:#1e1e1e; color:#fff; font-family:Arial, sans-serif; text-align:center; }
+    header, footer { padding:20px; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }
+    h1 { margin:0 }
+    input { width:70%; max-width:500px; padding:10px; border:none; border-radius:5px; margin-top:20px; }
+    button { margin:10px; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; background:#4caf50; color:#fff; }
+    button:hover { background:#45a049; }
+    #resultado { margin-top:20px; font-size:1.2rem; color:#00ffea; }
+    a { color:#00ffea }
+  </style>
+</head>
+<body>
+  <header><h1>🕵️ Verificador de Link Encurtado - EDCELL-TECH</h1></header>
+
+  <input type="text" id="link" placeholder="Cole aqui o link encurtado..."><br>
+  <button onclick="verificar()">🔍 Ver Site por Trás</button>
+  <button onclick="resetar()">♻️ Resetar</button>
+  <button onclick="listar()">🌐 Encurtadores Populares</button>
+
+  <div id="resultado"></div>
+
+  <footer>🛡️ Desenvolvido por <strong>EDCELL-TECH</strong></footer>
+
+<script>
+async function verificar(){
+  const url = document.getElementById("link").value.trim();
+  const resultado = document.getElementById("resultado");
+  if(!url){ resultado.innerHTML="⚠️ Informe um link."; return; }
+
+  try {
+    const resp = await fetch("https://unshorten.me/json/" + encodeURIComponent(url));
+    const data = await resp.json();
+    if(data.resolved_url){
+      resultado.innerHTML = `✅ Redireciona para:<br><a href="${data.resolved_url}" target="_blank">${data.resolved_url}</a>`;
+    } else {
+      resultado.innerHTML = "❌ Não foi possível resolver o link.";
+    }
+  } catch(e){
+    resultado.innerHTML = "❌ Erro ao tentar acessar a API pública.";
+  }
+}
+
+function resetar(){ 
+  document.getElementById("link").value=""; 
+  document.getElementById("resultado").innerHTML=""; 
+}
+
+function listar(){
+  const encurtadores = [
+    {nome:"Bitly",url:"https://bitly.com"},
+    {nome:"TinyURL",url:"https://tinyurl.com"},
+    {nome:"Rebrandly",url:"https://rebrandly.com"},
+    {nome:"T2M",url:"https://t2mio.com"},
+    {nome:"Short.io",url:"https://short.io"},
+    {nome:"Cutt.ly",url:"https://cutt.ly"}
+  ];
+  let html = "<h3>🔗 Encurtadores Populares</h3><ul>";
+  encurtadores.forEach(e=>{ html+=`<li><a href="${e.url}" target="_blank">${e.nome}</a></li>` });
+  html+="</ul>";
+  document.getElementById("resultado").innerHTML = html;
+}
+</script>
+</body>
+</html>
